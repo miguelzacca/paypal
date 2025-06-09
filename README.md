@@ -3,14 +3,18 @@
 https://www.paypal.com
 
 ```bash
-npm run dev
+npm ci
 ```
 
 ```bash
 npm run setup
 ```
 
+```bash
+npm run dev
 ```
-npm i -g pm2
-pm2 start ./src/index.js
+
+```
+npm run pm2
+npm run pm2:stop
 ```
