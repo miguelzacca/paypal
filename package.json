@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --env-file=.env --watch ./src/index.js",
-    "setup": "node ./src/dns.js"
+    "setup": "node ./src/dns.js",
+    "pm2": "npx pm2 start ./src/index.js",
+    "pm2:stop": "npx pm2 kill"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pm2": "^6.0.8"
   }
 }
