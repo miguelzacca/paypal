@@ -1,9 +1,15 @@
 import express from 'express'
 import fs from 'node:fs'
 import https from 'node:https'
+import cors from 'cors'
+import { config } from 'dotenv'
 import { abs } from './util.js'
 
+config({ path: '.env.config' })
+
 const app = express()
+app.use(express.json())
+app.use(cors())
 
 app.use(express.static('./public'))
 
@@ -13,6 +19,10 @@ app.get('/myaccount/summary', (req, res) => {
 
 app.get('/signin', (req, res) => {
   res.sendFile(abs('./pages/login.html'))
+})
+
+app.get('/api/balance', (req, res) => {
+  res.status(200).json({ balance: process.env.BALANCE })
 })
 
 app.use((req, res) => {
@@ -28,6 +38,10 @@ app.use((req, res) => {
   const returnUri = encodeURIComponent(originalUrl)
 
   setTimeout(() => res.redirect(`/signin?returnUri=${returnUri}`), 1000)
+})
+
+app.use((err, req, res, next) => {
+  res.status(204).end()
 })
 
 const options = {
