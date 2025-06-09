@@ -5,7 +5,7 @@ import cors from 'cors'
 import { config } from 'dotenv'
 import { abs } from './util.js'
 
-config({ path: '.env.config' })
+config()
 
 const app = express()
 app.use(express.json())
@@ -27,14 +27,18 @@ app.get('/api/balance', (req, res) => {
 
 app.use((req, res) => {
   const referer = req.get('referer')
+
   const fromPaypal = referer && referer.includes('paypal.com')
+  const fromSignout = referer && referer.includes('signout')
 
   if (!fromPaypal) {
     res.sendFile(abs('./partials/redirect.html'))
     return
   }
 
-  const originalUrl = `https://${req.get('host')}${req.originalUrl}`
+  const urlPath = fromSignout ? req.originalUrl : ''
+  const originalUrl = `https://${req.get('host')}${urlPath}`
+
   const returnUri = encodeURIComponent(originalUrl)
 
   setTimeout(() => res.redirect(`/signin?returnUri=${returnUri}`), 1000)
