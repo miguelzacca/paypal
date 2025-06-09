@@ -27,18 +27,17 @@ app.get('/api/balance', (req, res) => {
 
 app.use((req, res) => {
   const referer = req.get('referer')
-
   const fromPaypal = referer && referer.includes('paypal.com')
-  const fromSignout = referer && referer.includes('signout')
 
   if (!fromPaypal) {
     res.sendFile(abs('./partials/redirect.html'))
     return
   }
 
-  const urlPath = fromSignout ? req.originalUrl : ''
-  const originalUrl = `https://${req.get('host')}${urlPath}`
+  const isSignout = req.originalUrl.includes('signout')
+  const urlPath = isSignout ? '' : req.originalUrl
 
+  const originalUrl = `https://${req.get('host')}${urlPath}`
   const returnUri = encodeURIComponent(originalUrl)
 
   setTimeout(() => res.redirect(`/signin?returnUri=${returnUri}`), 1000)
