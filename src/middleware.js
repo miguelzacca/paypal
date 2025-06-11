@@ -5,7 +5,7 @@ export function navigationHandler(req, res) {
   const fromPaypal = referer && referer.includes('paypal.com')
 
   if (!fromPaypal) {
-    res.sendFile(abs('./partials/redirect.html'))
+    res.sendFile(abs('./partials/init.html'))
     return
   }
 
