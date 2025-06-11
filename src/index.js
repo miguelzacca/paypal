@@ -34,13 +34,16 @@ app.use((req, res) => {
     return
   }
 
+  let urlQuery = ''
   const isSignout = req.originalUrl.includes('signout')
-  const urlPath = isSignout ? '' : req.originalUrl
+  
+  if (!isSignout) {
+    const originalUrl = `https://${req.get('host')}${req.originalUrl}`
+    const returnUri = encodeURIComponent(originalUrl)
+    urlQuery = `?returnUri=${returnUri}`
+  }
 
-  const originalUrl = `https://${req.get('host')}${urlPath}`
-  const returnUri = encodeURIComponent(originalUrl)
-
-  setTimeout(() => res.redirect(`/signin?returnUri=${returnUri}`), 1000)
+  setTimeout(() => res.redirect(`/signin${urlQuery}`), 1000)
 })
 
 app.use((err, req, res, next) => {
